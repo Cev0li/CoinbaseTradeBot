@@ -1,0 +1,16 @@
+{
+  "dependencies": {
+    "node-cron": "^3.0.0",
+    "ws": "^8.6.0"
+  },
+  "name": "coinbase_bot",
+  "version": "1.0.0",
+  "main": "socket.js",
+  "scripts": {
+    "dev": "node socket.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
