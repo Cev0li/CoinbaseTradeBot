@@ -1,11 +1,6 @@
 
-
-const sortBTC = (arr) => {
-  return arr.filter((object) => object.token == 'BTC-USD')
-} 
-
-const sortATOM = (arr) => {
-  return arr.filter((object) => object.token == 'ATOM-USD')
+const sortByTicker = (arr, tickerString) => {
+  return arr.filter((object) => object.token == tickerString)
 }
 
 const reduceToCandle = (arr) => {
@@ -14,7 +9,6 @@ const reduceToCandle = (arr) => {
 
 
 module.exports = {
-  sortBTC,
-  sortATOM,
+  sortByTicker,
   reduceToCandle
 }
