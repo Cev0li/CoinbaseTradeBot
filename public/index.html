@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+
+<head>
+
+</head>
+<body>
+    <h1>BOT IS HERE</h1>
+    <div id="pricefeed">
+        <p id="price"></p>
+    </div>
+
+    <div>
+        <form id="APIinfo">
+            <label>Key</label>
+            <input type="text" name="APIkey" placeholder="APIKEY" autocomplete="on" required>
+            <br>
+            <label>Secret</label>
+            <input type="text" name="APIsecret" placeholder="APISECRET" autocomplete="on" required>
+            <br>
+            <label>Pass</label>
+            <input type="text" name="APIpass" placeholder="APIPASS" autocomplete="on" required>
+            <br>
+            <label>APIURI</label>
+            <input type="text" name="APIURI" placeholder="APIURI" autocomplete="on" required>
+            <br>
+            <button>Submit</button>
+        </form>
+    </div>
+
+    <div>
+        <p id="clientInit"></p>
+    </div>
+
+    <div id="accounts">
+        <p>Initalize API client to see wallet balances</p>
+    </div>
+
+    <div>
+        <h3>Buy form</h3>
+        <form id="buyForm">
+            <label>Asset pair</label>
+            <input type="text" name="product" placeholder="format: buyticker-currencyticker" autocomplete="on" required>
+            <br>
+            <label>Size</label>
+            <input type="text" name="size" placeholder="How much asset to buy" autocomplete="on" required>
+            <br>
+            <label>Price</label>
+            <input type="text" name="price" placeholder="Price of asset to trigger order" autocomplete="on" required>
+            <br>
+            <button>Submit</button>
+        </form>
+    </div>
+
+    <div>
+        <h3>Open Orders</h3>
+        <div id="openOrders"></div>
+    </div>
+
+    <div>
+        <h3>Open positions</h3>
+        <div id="filledOrders"></div>
+    </div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mustache.js/3.0.1/mustache.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/client.js"></script>
+</body>
