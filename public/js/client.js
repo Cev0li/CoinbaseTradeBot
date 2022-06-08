@@ -22,18 +22,15 @@ socket.on('accounts', (arr) => {
     $accounts.innerHTML = '<ul>' + arr.map(obj => `<li> ${obj.wallet}: ${obj.balance}</li>`).join(' ') + '</ul>'
 })
 
-socket.on('filledOrders', (filledOrders) => {
-    $filledOrders.innerHTML = filledOrders.map(obj, i => `<p>Position ${i}: ${obj.product_id.slice(0, obj.product_id.indexOf('-'))}: ${obj.size.slice(0, obj.size.indexOf('.') +3)} @ ${obj.price.slice(0, obj.price.indexOf('.') +3)} USD: ${obj.usd_volume.slice(0, obj.usd_volume.indexOf('.') +3)} </p>`).join(' ')
-    console.log(filledOrders)
-})
+socket.on('orderUpdates', (openOrders, filledOrders) => {
 
-socket.on('buy', (openOrders) => {
-    if(openOrders.length == 0){ return $openOrders.innerHTML = 'No orders currently open...'}
+    if(filledOrders.length > 0){
+    $filledOrders.innerHTML = filledOrders.map(obj => `<p> ${obj.product_id}- size: ${obj.size.slice(0, obj.size.indexOf('.') + 5)} value: $${obj.executed_value.slice(0, obj.executed_value.indexOf('.'))}</p>`).join(' ')
+    } else { $filledOrders.innerHTML = 'No open positions...'}
 
-    $openOrders.innerHTML = openOrders.map(obj => `<p> ${obj.product_id.slice(0, obj.product_id.indexOf('-'))}: ${obj.size} </p>`).join(' ')
-    console.log({
-        openOrders
-    })
+    if(openOrders.length > 0){
+        $openOrders.innerHTML = openOrders.map(obj => `<p>Position: ${obj.product_id}- size: ${obj.size.slice(0, obj.size.indexOf('.') + 5)} target price: $${obj.price.slice(0, obj.price.indexOf('.'))} </p>`).join(' ')
+    } else { $openOrders.innerHTML = 'No open orders...'}
 })
 
 $APIinfo.addEventListener('submit', (e) => {
@@ -71,12 +68,10 @@ $buyForm.addEventListener('submit', (e) => {
         product_id
     }
 
-    socket.emit('buy', buyParams, (openOrders) => {
-        if(typeof openOrders === 'string'){return alert('Buy not successful')}
+    socket.emit('buy', buyParams, (string) => {
+        if(string === 'Buy order unsuccessful.'){return alert(string)}
 
-        $openOrders.innerHTML = openOrders.map(obj => `<p> ${obj.product_id.slice(0, obj.product_id.indexOf('-'))}: ${obj.size} </p>`).join(' ')
-        console.log({
-            openOrders
-        })
+        $filledOrders.innerHTML = string
+        $openOrders.innerHTML = string
     })
 })

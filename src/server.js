@@ -4,7 +4,7 @@ const express = require('express')
 const socketio = require('socket.io')
 const CoinbasePro = require('coinbase-pro')
 const {atomCandles, btcCandles} = require('./socket')
-const {sortOpenOrders, sortFilledOrders} = require('./utils/utils')
+const {sortOrders, ordersToFills, accountUpdate} = require('./utils/utils')
 
 const app = express()
 const server = http.createServer(app)
@@ -45,61 +45,58 @@ io.on('connection', (socket) => {
             apiURI
         )
 
-        cbClient.getAccounts(async (e, d) => {
+        // cbClient.getAccounts(async (e, d) => {
 
-            if(e){
-                 return callback('Client not initalized, check API entries.')
-            } 
+        //     if(e){
+        //          return callback('Client not initalized, check API entries.')
+        //     } 
 
-            let data = await JSON.parse(d.body)
+        //     let data = await JSON.parse(d.body)
 
-            for(let i = 0; i < data.length - 1; i++){
-                if(data[i].balance > .0001){
-                    cbAccounts.push({
-                        id: data[i].id,
-                        wallet: data[i].currency,
-                        balance: data[i].balance
-                    })
-                }
-            }
-
-            callback()
+        //     for(let i = 0; i < data.length - 1; i++){
+        //         if(data[i].balance > .0001){
+        //             cbAccounts.push({
+        //                 id: data[i].id,
+        //                 wallet: data[i].currency,
+        //                 balance: data[i].balance
+        //             })
+        //         }
+        //     }
+        accountUpdate(cbAccounts, cbClient)
+            
+        callback()
 
             io.emit('accounts', cbAccounts)
-        })
+        // })
     })
 
     socket.on('buy', (order, callback) => {
 
         cbClient.buy(order, async(e, r) => {
 
-            if(e){return callback('Buy order unsuccessful.')}
+            if(e){
+                console.log(e.data)
+                return callback('Buy order unsuccessful.')
+            }
 
             const message = await JSON.parse(r.body)
             orderIds.push(message.id)
-
-            cbClient.getOrders(async(e, r) => {
-                const response = await JSON.parse(r.body)
-                sortOpenOrders(orderIds, response, orders)
-                callback(orders)
-                cbClient.getOrder(orderIds[orderIds.length-1], (e, r)=>{
-                    console.log(r.body)
-                })
-                })
+            console.log(orderIds)
+            callback('Initalizing positions...')
         })
     })
 
     setInterval(function callback(){
 
-        if(cbClient != 1 && orders.length > 0){
-
-            cbClient.getFills({product_id: 'BTC-USD'}, async(e, r) => {
-                const response = await JSON.parse(r.body)
-                sortFilledOrders(orders, response, fills)
-            })
-
-            if(fills.length > 0){socket.emit('filledOrders', fills)}
-            socket.emit('buy', orders)
+        if(cbClient != 1){
+            ordersToFills(orders, fills, cbClient)
+            sortOrders(orderIds, orders, fills, cbClient)
+                console.log(orderIds)
+                console.log(fills.length + ': fills .length')
+                console.log(fills)
+                console.log(orders.length + ': orders.length')
+                console.log(orders)
+            socket.emit('orderUpdates', orders, fills)
         }
     }, 10000)
 })
