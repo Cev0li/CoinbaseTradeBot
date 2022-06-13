@@ -12,7 +12,7 @@ const accountUpdate = (arr, cbClient) => {
   cbClient.getAccounts(async (e, d) => {
 
     if(e){
-         return callback('Client not initalized, check API entries.')
+         return 'Client not initalized, check API entries.'
     } 
 
     let data = await JSON.parse(d.body)
@@ -70,6 +70,26 @@ const ordersToFills = (arr1, arr2, cbClient) => {
     })
   }
 }
+
+//arr1 fills; arr2 tracking
+// const trackBtcPositions = (arr1, arr2, publicClient, callback) => {
+
+//   publicClient.getProductTicker('BTC-USD', async(e, r) => {
+//     if(e){callback (e, undefined)
+//     } else {
+//       let response = await JSON.parse(r.body)
+      
+//       arr1.forEach((order, i) => {
+//         if(order.price > response.price * 1.03 && order.product_id == 'BTC-USD'){
+//          arr2.push(order)
+//          return arr1.splice(i, 1)
+//         }
+//       })
+
+//       callback(undefined, arr2)
+//     }
+//   })
+// }
 
 module.exports = {
   sortByTicker,

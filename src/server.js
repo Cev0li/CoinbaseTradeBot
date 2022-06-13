@@ -20,11 +20,13 @@ let secret
 let pass
 let apiURI
 let cbClient = 1
+const publicClient = new CoinbasePro.PublicClient()
 
 let cbAccounts = []
 let orderIds = []
 let orders = []
 let fills = []
+let sells = []
 
 io.on('connection', (socket) => {
 
@@ -45,29 +47,10 @@ io.on('connection', (socket) => {
             apiURI
         )
 
-        // cbClient.getAccounts(async (e, d) => {
-
-        //     if(e){
-        //          return callback('Client not initalized, check API entries.')
-        //     } 
-
-        //     let data = await JSON.parse(d.body)
-
-        //     for(let i = 0; i < data.length - 1; i++){
-        //         if(data[i].balance > .0001){
-        //             cbAccounts.push({
-        //                 id: data[i].id,
-        //                 wallet: data[i].currency,
-        //                 balance: data[i].balance
-        //             })
-        //         }
-        //     }
         accountUpdate(cbAccounts, cbClient)
+        setTimeout(() => {socket.emit('accounts', cbAccounts)}, 2000)
             
         callback()
-
-            io.emit('accounts', cbAccounts)
-        // })
     })
 
     socket.on('buy', (order, callback) => {
@@ -91,12 +74,11 @@ io.on('connection', (socket) => {
         if(cbClient != 1){
             ordersToFills(orders, fills, cbClient)
             sortOrders(orderIds, orders, fills, cbClient)
-                console.log(orderIds)
-                console.log(fills.length + ': fills .length')
+
+                console.log(orders)    
                 console.log(fills)
-                console.log(orders.length + ': orders.length')
-                console.log(orders)
-            socket.emit('orderUpdates', orders, fills)
+                console.log(sells)
+            socket.emit('orderUpdates', orders, fills) //add sells
         }
     }, 10000)
 })
