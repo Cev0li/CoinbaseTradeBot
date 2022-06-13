@@ -25,11 +25,11 @@ socket.on('accounts', (arr) => {
 socket.on('orderUpdates', (openOrders, filledOrders) => {
 
     if(filledOrders.length > 0){
-    $filledOrders.innerHTML = filledOrders.map(obj => `<p> ${obj.product_id}- size: ${obj.size.slice(0, obj.size.indexOf('.') + 5)} value: $${obj.executed_value.slice(0, obj.executed_value.indexOf('.'))}</p>`).join(' ')
+    $filledOrders.innerHTML = filledOrders.map(obj => `<p> ${obj.product_id}- size: ${obj.size.slice(0, obj.size.indexOf('.') + 5)} value: $${obj.executed_value.slice(0, obj.executed_value.indexOf('.') + 3)}</p>`).join(' ')
     } else { $filledOrders.innerHTML = 'No open positions...'}
 
     if(openOrders.length > 0){
-        $openOrders.innerHTML = openOrders.map(obj => `<p>Position: ${obj.product_id}- size: ${obj.size.slice(0, obj.size.indexOf('.') + 5)} target price: $${obj.price.slice(0, obj.price.indexOf('.'))} </p>`).join(' ')
+        $openOrders.innerHTML = openOrders.map(obj => `<p>Position: ${obj.product_id}- size: ${obj.size.slice(0, obj.size.indexOf('.') + 5)} target price: $${obj.price.slice(0, obj.price.indexOf('.') + 3)} </p>`).join(' ')
     } else { $openOrders.innerHTML = 'No open orders...'}
 })
 
