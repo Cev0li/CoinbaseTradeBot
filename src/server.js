@@ -4,7 +4,7 @@ const express = require('express')
 const socketio = require('socket.io')
 const CoinbasePro = require('coinbase-pro')
 const {atomCandles, btcCandles} = require('./socket')
-const {sortOrders, ordersToFills, accountUpdate} = require('./utils/utils')
+const {sortOrders, ordersToFills, accountUpdate, trackBtcPositions} = require('./utils/utils')
 
 const app = express()
 const server = http.createServer(app)
@@ -26,7 +26,7 @@ let cbAccounts = []
 let orderIds = []
 let orders = []
 let fills = []
-let sells = []
+let tracks = ['tracks']
 
 io.on('connection', (socket) => {
 
@@ -63,6 +63,7 @@ io.on('connection', (socket) => {
             }
 
             const message = await JSON.parse(r.body)
+            console.log(message)
             orderIds.push(message.id)
             console.log(orderIds)
             callback('Initalizing positions...')
@@ -74,11 +75,26 @@ io.on('connection', (socket) => {
         if(cbClient != 1){
             ordersToFills(orders, fills, cbClient)
             sortOrders(orderIds, orders, fills, cbClient)
+            trackBtcPositions(fills, tracks, publicClient, (e, {arr2, response}) => {
+                if(e){return console.log(e)}
+                tracks = arr2
+                console.log(tracks)
+                if(tracks.length > 1){
+                    tracks.forEach((order) => {
+                        order.track = response.price / order.price
+                        if(order.state > order.track - .01){
+                            console.log('sell order')
+                        } 
+        
+                        if(order.track > order.state){
+                            order.state = order.track
+                            console.log('order.state updated')
+                        }
+                    })
+                }
+            })
 
-                console.log(orders)    
-                console.log(fills)
-                console.log(sells)
-            socket.emit('orderUpdates', orders, fills) //add sells
+            socket.emit('orderUpdates', orders, fills)
         }
     }, 10000)
 })
