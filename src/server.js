@@ -1,5 +1,6 @@
 const path = require('path')
 const http = require('http')
+const fs = require('fs')
 const express = require('express')
 const socketio = require('socket.io')
 const CoinbasePro = require('coinbase-pro')
@@ -27,6 +28,7 @@ let orderIds = []
 let orders = []
 let fills = []
 let tracks = []
+let sells = []
 
 io.on('connection', (socket) => {
 
@@ -91,10 +93,12 @@ io.on('connection', (socket) => {
 
                             cbClient.sell(params, async(e, r) => {
                                 if(e){return console.log(e)}
-
                                 let response = await JSON.parse(r.body)
-
                                 console.log('SOLD AT: ' + response)
+                                sells.push(response)
+                                const JSONdata = JSON.stringify(sells)
+                                fsWriteFileSync('sells.json', JSONdata)
+                                return fills.splice(0, 1)
                             })
 
                         } 
