@@ -72,7 +72,7 @@ const ordersToFills = (arr1, arr2, cbClient) => {
 }
 
 //arr1 fills; arr2 tracking
-const trackBtcPositions = (arr1, arr2, publicClient, callback) => {
+const trackBtcPositions = (arr1, arr2, publicClient, cbClient, callback) => {
 
   publicClient.getProductTicker('BTC-USD', async(e, r) => {
     if(e){return callback(e, undefined)
@@ -80,7 +80,7 @@ const trackBtcPositions = (arr1, arr2, publicClient, callback) => {
       let response = await JSON.parse(r.body)
       
       arr1.forEach((order, i) => {
-        if(order.price * 1.039 > response.price && order.product_id == 'BTC-USD'){
+        if(response.price > order.price * 1.039 && order.product_id == 'BTC-USD'){
          order.track = response.price / order.price
          order.state = order.track
          arr2.push(order)
@@ -88,7 +88,7 @@ const trackBtcPositions = (arr1, arr2, publicClient, callback) => {
         }
       })
 
-      callback(undefined, {arr2, response})
+      callback(undefined, {arr2, response, cbClient})
     }
   })
 }
